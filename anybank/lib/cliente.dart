@@ -70,3 +70,43 @@ class Gerente extends Funcionario {
   }
 
 }
+
+class Quarto{
+  String tipo;
+  double valorDiaria;
+  int diarias;
+
+  Quarto(this.tipo, this.valorDiaria, this.diarias);
+
+  void reservar(){
+    print("Reserva realizada para $diarias diarias no quarto $tipo.");
+  }
+
+  void calcularValorTotal() {
+    print("Total a pagar: R\$${diarias * valorDiaria}");
+  }
+}
+
+class QuartoSimples extends Quarto {
+  QuartoSimples(int diarias) : super("Simples", 80, diarias);
+}
+
+class QuartoMedio extends Quarto {
+  QuartoMedio(int diarias) : super("Médio", 250, diarias);
+
+  void servirCafeManha(){
+    print("Servindo café da manhã no quarto do $tipo");
+  }
+}
+
+class QuartoLuxo extends Quarto {
+  QuartoLuxo(int diarias) : super("Luxo", 1000, diarias);
+
+  void servirCafeManha(){
+    print("Servindo café da manhã no quarto do $tipo");
+  }
+
+  void realizarServicoQuarto(){
+    print("Limpando o quarto $tipo.");
+  }
+}

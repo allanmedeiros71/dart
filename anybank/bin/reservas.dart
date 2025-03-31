@@ -17,4 +17,17 @@ void main(){
   Gerente nonato = Gerente("Nonato Caboré", 5000);
   nonato.trabalhar();
 
+
+  QuartoSimples quartoSimples = QuartoSimples(3);
+  quartoSimples.reservar();
+  quartoSimples.calcularValorTotal();
+  QuartoMedio quartoMedio = QuartoMedio(5);
+  quartoMedio.reservar();
+  quartoMedio.servirCafeManha();
+  quartoMedio.calcularValorTotal();
+  QuartoLuxo quartoLuxo = QuartoLuxo(7);
+  quartoLuxo.reservar();
+  quartoLuxo.servirCafeManha();
+  quartoLuxo.realizarServicoQuarto();
+  quartoLuxo.calcularValorTotal();
 }

@@ -55,3 +55,16 @@ class ContaCorrente extends Conta {
     }
   }
 }
+
+class ContaSalario extends Conta {
+  String cnpj = "";
+  String empresa = "";
+
+  ContaSalario(super.titular, super._saldo, this.cnpj, this.empresa);
+
+  void creditarSalario(double salario){
+    _saldo += salario;
+    print("O salário da $empresa, de CNPJ $cnpj no valor de R\$ $salario, foi depositado!");
+  }
+
+}

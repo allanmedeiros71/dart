@@ -24,4 +24,9 @@ void main() {
   contaJulia.calculaRendimento();
   contaJulia.debitar(4300);
 
+  ContaSalario contaCatarina = ContaSalario("Galega", 100, "098098089809", "Venec Engenharia");
+  contaCatarina.imprimirSaldo();
+  contaCatarina.creditarSalario(1100);
+  contaCatarina.imprimirSaldo();
+
 }
