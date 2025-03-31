@@ -29,3 +29,44 @@ class Cliente{
   }
 
 }
+
+class Funcionario {
+  String nome;
+  double salario;
+
+  Funcionario(this.nome, this.salario);
+
+  void trabalhar(){
+    print("Olá, eu sou $nome");
+  }
+}
+
+class Cozinheiro extends Funcionario {
+  Cozinheiro(super.nome, super.salario);
+
+  @override
+  void trabalhar(){
+    print("Olá, eu sou $nome e sou cozinheiro");
+
+  }
+}
+
+class Garcom extends Funcionario {
+  Garcom(super.nome, super.salario);
+
+  @override
+  void trabalhar(){
+    print("Olá, eu sou $nome e sou garçom");
+  }
+}
+
+class Gerente extends Funcionario {
+  Gerente(super.nome, super.salario);
+
+  @override
+  void trabalhar(){
+    print("Olá, eu sou $nome e sou gerente");
+
+  }
+
+}
