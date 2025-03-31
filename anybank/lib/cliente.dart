@@ -71,7 +71,7 @@ class Gerente extends Funcionario {
 
 }
 
-class Quarto{
+abstract class Quarto{
   String tipo;
   double valorDiaria;
   int diarias;
