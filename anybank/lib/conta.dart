@@ -4,39 +4,38 @@ abstract class Conta {
 
   Conta(this.titular, this._saldo);
 
-  void creditar(double valor){
+  void creditar(double valor) {
     _saldo += valor;
     imprimirSaldo();
   }
 
-  void debitar(double valor){
-    if (valor <= _saldo){
+  void debitar(double valor) {
+    if (valor <= _saldo) {
       _saldo -= valor;
       imprimirSaldo();
     }
   }
 
-  void transferir(double valor, Conta conta){
+  void transferir(double valor, Conta conta) {
     debitar(valor);
     conta.creditar(valor);
   }
 
-  void imprimirSaldo(){
+  void imprimirSaldo() {
     print("O saldo atual de $titular é : R\$ $_saldo");
   }
 
-  double getSaldo(){
+  double getSaldo() {
     return _saldo;
   }
-
 }
 
-class ContaPoupanca extends Conta{
+class ContaPoupanca extends Conta {
   double rendimento = 0.05;
 
   ContaPoupanca(super.titular, super._saldo);
 
-  void calculaRendimento(){
+  void calculaRendimento() {
     _saldo += _saldo * rendimento;
     imprimirSaldo();
   }
@@ -62,9 +61,56 @@ class ContaSalario extends Conta {
 
   ContaSalario(super.titular, super._saldo, this.cnpj, this.empresa);
 
-  void creditarSalario(double salario){
+  void creditarSalario(double salario) {
     _saldo += salario;
-    print("O salário da $empresa, de CNPJ $cnpj no valor de R\$ $salario, foi depositado!");
+    print(
+      "O salário da $empresa, de CNPJ $cnpj no valor de R\$ $salario, foi depositado!",
+    );
+  }
+}
+
+mixin Imposto {
+  double taxa = 0.03;
+
+  double valorTaxado(double valor) {
+    return valor * taxa;
+  }
+}
+
+class ContaEmpresa extends Conta with Imposto {
+  ContaEmpresa(super.titular, super._saldo);
+
+  @override
+  void debitar(double valor) {
+    if (_saldo >= valor + valorTaxado(valor)) {
+      _saldo -= valor + valorTaxado(valor);
+      imprimirSaldo();
+    }
   }
 
+  @override
+  void creditar(double valor) {
+    _saldo += valor - valorTaxado(valor);
+    imprimirSaldo();
+  }
+}
+
+class ContaInvestimento extends Conta with Imposto {
+  ContaInvestimento(super.titular, super._saldo);
+
+  @override
+  @override
+  void debitar(double valor) {
+    if (_saldo >= valor + valorTaxado(valor)) {
+      _saldo -= valor + valorTaxado(valor);
+      imprimirSaldo();
+    }
+  }
+
+  @override
+  @override
+  void creditar(double valor) {
+    _saldo += valor - valorTaxado(valor);
+    imprimirSaldo();
+  }
 }
