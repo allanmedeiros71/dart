@@ -1,12 +1,20 @@
+import 'dart:async';
+
 import 'package:assincronismo/env.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
+StreamController<String> streamController = StreamController<String>();
+
 void main() {
-  // print("Olá mundo");
-  // requestData();
-  // requestDataAsync();
-  // print("Esperado função assíncrona");
+  StreamSubscription streamSubscription = streamController.stream.listen((
+    String info,
+  ) {
+    print(info);
+  });
+
+  requestData();
+  requestDataAsync();
   sendDataAsync({
     "id": "NEW001",
     "name": "Allan",
@@ -20,29 +28,20 @@ requestData() {
       "https://gist.githubusercontent.com/allanmedeiros71/65e7a2458fa78fee036c9129af64548b/raw/80b0e1732295475b55e6f60271812e641cae0451/account.json";
 
   Future<Response> futureResponse = get(Uri.parse(url));
-  print(futureResponse);
 
   futureResponse.then((Response response) {
-    print(response);
-    print(response.body);
-    List<dynamic> listAccounts = json.decode(response.body);
-    // Ver: https://medium.com/@ahsan-001/exploring-dart-functions-a-comprehensive-guide-with-coding-examples-a2b836f36d85
-    Map<String, dynamic> mapCarla = listAccounts.firstWhere(
-      (element) => element["name"] == "Carla",
+    streamController.add(
+      "${DateTime.now()} | Requisição de leitura (usando then)",
     );
-    print(mapCarla["balance"]);
   });
-
-  print("Última coisa a acontecer na função");
 }
 
 Future<List<dynamic>> requestDataAsync() async {
   String url =
       "https://gist.githubusercontent.com/allanmedeiros71/65e7a2458fa78fee036c9129af64548b/raw/80b0e1732295475b55e6f60271812e641cae0451/account.json";
   Response response = await get(Uri.parse(url));
+  streamController.add("${DateTime.now()} | Requisição de leitura");
   return json.decode(response.body);
-  // print(json.decode(response.body)[0]);
-  // print("Última coisa a ser executada");
 }
 
 sendDataAsync(Map<String, dynamic> mapAccount) async {
@@ -63,5 +62,12 @@ sendDataAsync(Map<String, dynamic> mapAccount) async {
       },
     }),
   );
-  print(response.statusCode);
+
+  if (response.statusCode.toString()[0] == "2") {
+    streamController.add(
+      "${DateTime.now()} | Requisição de adição bem sucedida (${mapAccount["name"]})",
+    );
+  } else {
+    streamController.add("${DateTime.now()} | Requisição falhou");
+  }
 }
