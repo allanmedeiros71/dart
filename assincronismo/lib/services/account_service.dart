@@ -29,10 +29,7 @@ class AccountService {
     return listAccount;
   }
 
-  addAccount(Account account) async {
-    List<Account> listAccounts = await getAll();
-    listAccounts.add(account);
-
+  Future<bool> _saveAccounts(List<Account> listAccounts) async {
     List<Map<String, dynamic>> listContent = [];
     for (Account account in listAccounts) {
       listContent.add(account.toMap());
@@ -54,6 +51,24 @@ class AccountService {
 
     if (response.statusCode.toString()[0] == "2") {
       _streamController.add(
+        "${DateTime.now()} | Gravação bem sucedida",
+      );
+      return true;
+    } else {
+      _streamController.add(
+        "${DateTime.now()} | Gravação falhou",
+      );
+      return false;
+    }
+  }
+
+  addAccount(Account account) async {
+    List<Account> listAccounts = await getAll();
+    listAccounts.add(account);
+
+    bool result = await _saveAccounts(listAccounts);
+    if (result) {
+      _streamController.add(
         "${DateTime.now()} | Requisição de adição bem sucedida (${account.name})",
       );
     } else {
@@ -61,6 +76,35 @@ class AccountService {
         "${DateTime.now()} | Requisição falhou (${account.name})",
       );
     }
+
+    // List<Map<String, dynamic>> listContent = [];
+    // for (Account account in listAccounts) {
+    //   listContent.add(account.toMap());
+    // }
+
+    // String content = json.encode(listContent);
+
+    // Response response = await post(
+    //   Uri.parse(url),
+    //   headers: {"Authorization": "Bearer $githubApiKey"},
+    //   body: json.encode({
+    //     "descrption": "Alteração de accounts.json via API com Dart",
+    //     "public": true,
+    //     "files": {
+    //       "account.json": {"content": content},
+    //     },
+    //   }),
+    // );
+
+    // if (response.statusCode.toString()[0] == "2") {
+    //   _streamController.add(
+    //     "${DateTime.now()} | Requisição de adição bem sucedida (${account.name})",
+    //   );
+    // } else {
+    //   _streamController.add(
+    //     "${DateTime.now()} | Requisição falhou (${account.name})",
+    //   );
+    // }
   }
 
   Future<Account> getAccountById(String id) async {
@@ -79,7 +123,6 @@ class AccountService {
       Account emptyAccount = Account(id: "0", name: "", lastName: "", balance: 0);
       return emptyAccount;
     }
-
   }
 
   Future<bool> updateAccount(Account newAccount) async {
@@ -88,11 +131,18 @@ class AccountService {
     if (index >= 0){
       // Achou
       listAccounts[index] = newAccount;
-      // Salva listAccounts
-      _streamController.add(
-        "${DateTime.now()} | Requisição de alteração bem sucedida (${newAccount.name})",
-      );
-      return true;
+      bool result = await _saveAccounts(listAccounts);
+      if (result) {
+        _streamController.add(
+          "${DateTime.now()} | Requisição de alteração bem sucedida (${listAccounts[index].name})",
+        );
+        return true;
+      } else {
+        _streamController.add(
+          "${DateTime.now()} | Não foi possível realizar a alteração (${listAccounts[index].name})",
+        );
+        return false;
+      }
     } else {
       _streamController.add(
         "${DateTime.now()} | Não foi possível realizar a alteração. Conta não encontrada (${newAccount.name})",
@@ -109,11 +159,18 @@ class AccountService {
     if (index >= 0){
       // Achou
       listAccounts.removeAt(index);
-      // Salva listAccounts
-      _streamController.add(
-        "${DateTime.now()} | Requisição de exclusão bem sucedida",
-      );
-      return true;
+      bool result = await _saveAccounts(listAccounts);
+      if (result) {
+        _streamController.add(
+          "${DateTime.now()} | Requisição de exclusão bem sucedida (Id: $id)",
+        );
+        return true;
+      } else {
+        _streamController.add(
+          "${DateTime.now()} | Não foi possível realizar a exclusão (Id: )",
+        );
+        return true;
+      }
     } else {
       _streamController.add(
         "${DateTime.now()} | Não foi possível realizar a alteração. Conta não encontrada ($id)",
@@ -121,7 +178,4 @@ class AccountService {
       return false;
     }
   }
-
-
-
 }
