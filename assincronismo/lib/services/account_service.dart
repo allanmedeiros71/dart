@@ -62,4 +62,66 @@ class AccountService {
       );
     }
   }
+
+  Future<Account> getAccountById(String id) async {
+    List<Account> listAccounts = await getAll();
+    final index = listAccounts.indexWhere((account) => account.id == id);
+
+    if (index >= 0){
+      _streamController.add(
+        "${DateTime.now()} | Encontrada conta com o Id: $id (${listAccounts[index].name})",
+      );
+      return listAccounts[index];
+    } else {
+      _streamController.add(
+        "${DateTime.now()} | Não foi encontrada nenhuma conta com Id: $id",
+      );
+      Account emptyAccount = Account(id: "0", name: "", lastName: "", balance: 0);
+      return emptyAccount;
+    }
+
+  }
+
+  Future<bool> updateAccount(Account newAccount) async {
+    List<Account> listAccounts = await getAll();
+    final index = listAccounts.indexWhere((account) => account.id == newAccount.id);
+    if (index >= 0){
+      // Achou
+      listAccounts[index] = newAccount;
+      // Salva listAccounts
+      _streamController.add(
+        "${DateTime.now()} | Requisição de alteração bem sucedida (${newAccount.name})",
+      );
+      return true;
+    } else {
+      _streamController.add(
+        "${DateTime.now()} | Não foi possível realizar a alteração. Conta não encontrada (${newAccount.name})",
+      );
+      return false;
+    }
+  }
+
+  Future<bool> deleteAccount(String id) async {
+    List<Account> listAccounts = await getAll();
+
+    // listAccounts.removeWhere((account) => account.id == id);
+    final index = listAccounts.indexWhere((account) => account.id == id);
+    if (index >= 0){
+      // Achou
+      listAccounts.removeAt(index);
+      // Salva listAccounts
+      _streamController.add(
+        "${DateTime.now()} | Requisição de exclusão bem sucedida",
+      );
+      return true;
+    } else {
+      _streamController.add(
+        "${DateTime.now()} | Não foi possível realizar a alteração. Conta não encontrada ($id)",
+      );
+      return false;
+    }
+  }
+
+
+
 }
