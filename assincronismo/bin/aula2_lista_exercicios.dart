@@ -78,7 +78,9 @@ void getReceitasPorIngredientes(List<String> ingredientes) async {
     }
   }
 
-  receitasPossiveis.forEach((receita) => print("Receita: $receita"));
+  for (var receita in receitasPossiveis) {
+    print("Receita: $receita");
+  }
 }
 
 // Exercício 3: Organizando times de vôlei por nível de habilidade

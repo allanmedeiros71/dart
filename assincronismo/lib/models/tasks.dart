@@ -1,6 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-import 'dart:convert';
 
 class Task {
   String id;
@@ -36,7 +34,7 @@ class Task {
 
 class TaskManager {
   final List<Task> _listTasks = []; // Perceba que "Task" ainda não existe.
-  StreamController<String> _tasksController = StreamController<String>();
+  final StreamController<String> _tasksController = StreamController<String>();
 
   Stream<String> get stream => _tasksController.stream;
 
@@ -76,7 +74,7 @@ class TaskManager {
 
 void main() {
   TaskManager taskManager = TaskManager();
-  StreamSubscription subscription = taskManager.stream.listen((message) {
+  StreamSubscription _ = taskManager.stream.listen((message) {
     print("Notificação: $message");
   });
 
