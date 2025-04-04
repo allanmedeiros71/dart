@@ -1,16 +1,7 @@
-void main() {
-  // StreamSubscription streamSubscription = streamController.stream.listen((
-  //   String info,
-  // ) {
-  //   print(info);
-  // });
+import 'package:assincronismo/screens/account_screen.dart';
 
-  // requestData();
-  // requestDataAsync();
-  // sendDataAsync({
-  //   "id": "NEW001",
-  //   "name": "Allan",
-  //   "lastName": "Medeiros",
-  //   "balance": 2100.0,
-  // });
+void main() {
+  AccountScreen accountScreen = AccountScreen();
+  accountScreen.initializeStream();
+  accountScreen.runChatbot();
 }

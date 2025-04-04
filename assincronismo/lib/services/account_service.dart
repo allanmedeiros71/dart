@@ -50,20 +50,23 @@ class AccountService {
     );
 
     if (response.statusCode.toString()[0] == "2") {
-      _streamController.add(
-        "${DateTime.now()} | Gravação bem sucedida",
-      );
+      _streamController.add("${DateTime.now()} | Gravação bem sucedida");
       return true;
     } else {
-      _streamController.add(
-        "${DateTime.now()} | Gravação falhou",
-      );
+      _streamController.add("${DateTime.now()} | Gravação falhou");
       return false;
     }
   }
 
   addAccount(Account account) async {
     List<Account> listAccounts = await getAll();
+    int index = listAccounts.indexWhere((account) => account.id == account.id);
+    if (index >= 0) {
+      _streamController.add(
+        "${DateTime.now()} | Requisição falhou (Conta já existente - ${account.name})",
+      );
+      return;
+    }
     listAccounts.add(account);
 
     bool result = await _saveAccounts(listAccounts);
@@ -111,7 +114,7 @@ class AccountService {
     List<Account> listAccounts = await getAll();
     final index = listAccounts.indexWhere((account) => account.id == id);
 
-    if (index >= 0){
+    if (index >= 0) {
       _streamController.add(
         "${DateTime.now()} | Encontrada conta com o Id: $id (${listAccounts[index].name})",
       );
@@ -120,15 +123,22 @@ class AccountService {
       _streamController.add(
         "${DateTime.now()} | Não foi encontrada nenhuma conta com Id: $id",
       );
-      Account emptyAccount = Account(id: "0", name: "", lastName: "", balance: 0);
+      Account emptyAccount = Account(
+        id: "0",
+        name: "",
+        lastName: "",
+        balance: 0,
+      );
       return emptyAccount;
     }
   }
 
   Future<bool> updateAccount(Account newAccount) async {
     List<Account> listAccounts = await getAll();
-    final index = listAccounts.indexWhere((account) => account.id == newAccount.id);
-    if (index >= 0){
+    final index = listAccounts.indexWhere(
+      (account) => account.id == newAccount.id,
+    );
+    if (index >= 0) {
       // Achou
       listAccounts[index] = newAccount;
       bool result = await _saveAccounts(listAccounts);
@@ -156,7 +166,7 @@ class AccountService {
 
     // listAccounts.removeWhere((account) => account.id == id);
     final index = listAccounts.indexWhere((account) => account.id == id);
-    if (index >= 0){
+    if (index >= 0) {
       // Achou
       listAccounts.removeAt(index);
       bool result = await _saveAccounts(listAccounts);
