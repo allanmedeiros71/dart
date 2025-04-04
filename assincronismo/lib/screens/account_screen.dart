@@ -3,12 +3,16 @@ import 'dart:io';
 import 'package:uuid/uuid.dart';
 import 'package:assincronismo/models/account.dart';
 import 'package:assincronismo/services/account_service.dart';
+import 'package:meta/meta.dart';
 
 class AccountScreen {
-  final AccountService _accountService = AccountService();
+  final AccountService accountService;
+
+  AccountScreen({AccountService? accountService})
+    : accountService = accountService ?? AccountService();
 
   void initializeStream() {
-    _accountService.streamInfos.listen((info) {
+    accountService.streamInfos.listen((info) {
       print(info);
     });
   }
@@ -30,19 +34,19 @@ class AccountScreen {
       String leitura = stdin.readLineSync()!;
       switch (leitura) {
         case "1":
-          await _getAllAccounts();
+          await getAllAccounts();
           break;
         case "2":
-          await _getAccountById();
+          await getAccountById();
           break;
         case "3":
-          await _addAccount();
+          await addAccount();
           break;
         case "4":
-          await _updateAccount();
+          await updateAccount();
           break;
         case "5":
-          await _deleteAccount();
+          await deleteAccount();
           break;
         case "6":
           isRunning = false;
@@ -54,8 +58,9 @@ class AccountScreen {
     }
   }
 
-  _getAllAccounts() async {
-    List<Account> listAccounts = await _accountService.getAll();
+  @visibleForTesting
+  Future<void> getAllAccounts() async {
+    List<Account> listAccounts = await accountService.getAll();
     for (Account account in listAccounts) {
       print(
         "${account.id} - ${account.name} ${account.lastName} ${account.balance}",
@@ -63,16 +68,18 @@ class AccountScreen {
     }
   }
 
-  _getAccountById() async {
+  @visibleForTesting
+  Future<void> getAccountById() async {
     print("Informe o ID da conta: ");
     String id = stdin.readLineSync()!;
-    Account account = await _accountService.getAccountById(id);
+    Account account = await accountService.getAccountById(id);
     print(
       "${account.id} - ${account.name} ${account.lastName} ${account.balance}",
     );
   }
 
-  _addAccount() async {
+  @visibleForTesting
+  Future<void> addAccount() async {
     print("Informe os dados da conta:");
     print("Nome: ");
     String name = stdin.readLineSync()!;
@@ -81,23 +88,21 @@ class AccountScreen {
     print("Saldo: ");
     double balance = double.parse(stdin.readLineSync()!);
 
-    // Generate ID as uuid using uuid package
-    String id = Uuid().v4();
-
     Account account = Account(
-      id: id,
+      id: const Uuid().v4(),
       name: name,
       lastName: lastName,
       balance: balance,
     );
-    await _accountService.addAccount(account);
+    await accountService.addAccount(account);
   }
 
-  _updateAccount() async {
+  @visibleForTesting
+  Future<void> updateAccount() async {
     print("Informe os dados da conta:");
     print("ID: ");
     String id = stdin.readLineSync()!;
-    Account oldAccount = await _accountService.getAccountById(id);
+    Account oldAccount = await accountService.getAccountById(id);
 
     print("Nome: (${oldAccount.name}) ");
     String name = stdin.readLineSync()!;
@@ -112,12 +117,13 @@ class AccountScreen {
       lastName: lastName,
       balance: balance,
     );
-    await _accountService.updateAccount(account);
+    await accountService.updateAccount(account);
   }
 
-  _deleteAccount() async {
+  @visibleForTesting
+  Future<void> deleteAccount() async {
     print("Informe o ID da conta: ");
     String id = stdin.readLineSync()!;
-    await _accountService.deleteAccount(id);
+    await accountService.deleteAccount(id);
   }
 }
