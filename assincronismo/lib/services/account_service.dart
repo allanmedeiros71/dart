@@ -58,25 +58,27 @@ class AccountService {
     }
   }
 
-  addAccount(Account account) async {
+  addAccount(Account newAccount) async {
     List<Account> listAccounts = await getAll();
-    int index = listAccounts.indexWhere((account) => account.id == account.id);
+    int index = listAccounts.indexWhere(
+      (account) => account.id == newAccount.id,
+    );
     if (index >= 0) {
       _streamController.add(
-        "${DateTime.now()} | Requisição falhou (Conta já existente - ${account.name})",
+        "${DateTime.now()} | Requisição falhou (Conta já existente - ${newAccount.name})",
       );
       return;
     }
-    listAccounts.add(account);
+    listAccounts.add(newAccount);
 
     bool result = await _saveAccounts(listAccounts);
     if (result) {
       _streamController.add(
-        "${DateTime.now()} | Requisição de adição bem sucedida (${account.name})",
+        "${DateTime.now()} | Requisição de adição bem sucedida (${newAccount.name})",
       );
     } else {
       _streamController.add(
-        "${DateTime.now()} | Requisição falhou (${account.name})",
+        "${DateTime.now()} | Requisição falhou (${newAccount.name})",
       );
     }
 
