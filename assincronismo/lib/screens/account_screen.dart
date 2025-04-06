@@ -1,18 +1,11 @@
 import 'dart:io';
 
-import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 import 'package:assincronismo/models/account.dart';
-import 'package:assincronismo/services/account_service.dart';
+import 'package:assincronismo/services/account_dio_service.dart';
 
 class AccountScreen {
-  final AccountService _accountService = AccountService();
-
-  void initializeStream() {
-    _accountService.streamInfos.listen((info) {
-      print(info);
-    });
-  }
+  final AccountDioService _accountService = AccountDioService();
 
   void runChatbot() async {
     print("Bom dia, eu sou o Allbot, seu assistente virtual");
@@ -56,24 +49,11 @@ class AccountScreen {
   }
 
   _getAllAccounts() async {
-    try {
-      List<Account> listAccounts = await _accountService.getAll();
-      for (Account account in listAccounts) {
-        print(
-          "${account.id} - ${account.name} ${account.lastName} ${account.balance}",
-        );
-      }
-    } on ClientException catch (e) {
-      print("Não foi possível conectar ao servidor");
-      print("Tente novamente mais tarde");
-      print(e.toString());
-      print(e.uri);
-    } on Exception catch (e) {
-      print("Não foi possível listar as contas");
-      print("Tente novamente mais tarde");
-      print(e.toString());
-    } finally {
-      print("${DateTime.now()} | Ocorreu uma tentativa de consulta");
+    List<Account> listAccounts = await _accountService.getAll();
+    for (Account account in listAccounts) {
+      print(
+        "${account.id} - ${account.name} ${account.lastName} ${account.balance}",
+      );
     }
   }
 
