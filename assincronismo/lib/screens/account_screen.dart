@@ -99,47 +99,70 @@ class AccountScreen {
     }
   }
 
-  // TODO: Tratar erro ao entrar dados em branco
-  // TODO: Validar o tipo do saldo
-  // TODO: Validar o tipo do tipo da conta
   _addAccount() async {
-    print("Informe os dados da conta:");
-    print("Nome: ");
-    String name = stdin.readLineSync()!;
-    print("Sobrenome: ");
-    String lastName = stdin.readLineSync()!;
-    print("Saldo: ");
-    double balance = double.parse(stdin.readLineSync()!);
-    print(
-      "Tipo de conta: (1 - ambrosia, 2 - canjica, 3 - pudim, 4 - brigadeiro",
-    );
-    String accountType = stdin.readLineSync()!;
-    int accountTypeIndex = int.parse(accountType);
-    AccountType accountTypeEnum = AccountType.values[accountTypeIndex - 1];
+    try {
+      print("Informe os dados da conta:");
+      print("Nome: ");
+      String? name = stdin.readLineSync();
+      if (name == null || name.trim().isEmpty) {
+        throw FormatException("Nome não pode estar em branco");
+      }
 
-    // Generate ID as uuid using uuid package
-    String id = Uuid().v4();
+      print("Sobrenome: ");
+      String? lastName = stdin.readLineSync();
+      if (lastName == null || lastName.trim().isEmpty) {
+        throw FormatException("Sobrenome não pode estar em branco");
+      }
 
-    Account account = Account(
-      id: id,
-      name: name,
-      lastName: lastName,
-      balance: balance,
-      accountType: accountTypeEnum,
-    );
-    await _accountService.addAccount(account);
-    print("Conta adicionada com sucesso");
-    print("Id: ${account.id}");
+      print("Saldo: ");
+      String? balanceStr = stdin.readLineSync();
+      if (balanceStr == null || balanceStr.trim().isEmpty) {
+        throw FormatException("Saldo não pode estar em branco");
+      }
+
+      double balance;
+      try {
+        balance = double.parse(balanceStr);
+      } catch (e) {
+        throw FormatException("Saldo deve ser um número válido");
+      }
+
+      print(
+        "Tipo de conta: (1 - ambrosia, 2 - canjica, 3 - pudim, 4 - brigadeiro",
+      );
+      String? accountType = stdin.readLineSync();
+      if (accountType == null || accountType.trim().isEmpty) {
+        throw FormatException("Tipo de conta não pode estar em branco");
+      }
+      int accountTypeIndex = int.parse(accountType);
+      if (accountTypeIndex < 1 || accountTypeIndex > 4) {
+        throw FormatException("Tipo de conta deve ser entre 1 e 4");
+      }
+      AccountType accountTypeEnum = AccountType.values[accountTypeIndex - 1];
+
+      // Generate ID as uuid using uuid package
+      String id = Uuid().v4();
+
+      Account account = Account(
+        id: id,
+        name: name,
+        lastName: lastName,
+        balance: balance,
+        accountType: accountTypeEnum,
+      );
+      await _accountService.addAccount(account);
+      print("Conta adicionada com sucesso");
+      print("Id: ${account.id}");
+    } catch (e) {
+      print("Erro ao adicionar conta: ${e.toString()}");
+    }
   }
 
-  // TODO: Tratar erro ao entrar dados em branco
-  // TODO: Validar o tipo do saldo
-  // TODO: Validar o tipo do tipo da conta
   _updateAccount() async {
     print("Informe os novos dados da conta:");
     print("Deixe em branco para manter o valor atual");
     print("ID: ");
-    String id = stdin.readLineSync()!;
+    String id = stdin.readLineSync()!.trim();
     if (id.isEmpty) {
       print("ID é obrigatório");
       return;
@@ -148,34 +171,57 @@ class AccountScreen {
       Account oldAccount = await _accountService.getAccountById(id);
 
       print("Nome: (${oldAccount.name}) ");
-      String name = stdin.readLineSync()!;
+      String name = stdin.readLineSync()!.trim();
       if (name.isEmpty) {
         name = oldAccount.name;
       }
 
       print("Sobrenome: (${oldAccount.lastName})");
-      String lastName = stdin.readLineSync()!;
+      String lastName = stdin.readLineSync()!.trim();
       if (lastName.isEmpty) {
         lastName = oldAccount.lastName;
       }
 
       print("Saldo: (${oldAccount.balance})");
-      String balanceStr = stdin.readLineSync()!;
+      String balanceStr = stdin.readLineSync()!.trim();
       double balance;
       if (balanceStr.isEmpty) {
         balance = oldAccount.balance;
       } else {
-        balance = double.parse(balanceStr);
+        try {
+          balance = double.parse(balanceStr);
+          if (balance.isNegative) {
+            print("O saldo não pode ser negativo");
+            return;
+          }
+        } catch (e) {
+          print("Erro: O saldo deve ser um número válido");
+          return;
+        }
       }
 
       print("Tipo de conta: (${oldAccount.accountType.name}) ");
-      print("(1 - Ambrosia, 2 - Canjica, 3 - Pudim, 4 - Brigadeiro");
-      String accountTypeIndex = stdin.readLineSync()!;
+      print("(1 - Ambrosia, 2 - Canjica, 3 - Pudim, 4 - Brigadeiro)");
+      String accountTypeIndex = stdin.readLineSync()!.trim();
+      AccountType accountTypeEnum;
+
       if (accountTypeIndex.isEmpty) {
-        accountTypeIndex = oldAccount.accountType.index.toString();
+        accountTypeEnum = oldAccount.accountType;
+      } else {
+        try {
+          int typeIndex = int.parse(accountTypeIndex);
+          if (typeIndex < 1 || typeIndex > AccountType.values.length) {
+            print(
+              "Erro: Tipo de conta inválido. Escolha um número entre 1 e ${AccountType.values.length}",
+            );
+            return;
+          }
+          accountTypeEnum = AccountType.values[typeIndex - 1];
+        } catch (e) {
+          print("Erro: O tipo de conta deve ser um número válido");
+          return;
+        }
       }
-      AccountType accountTypeEnum =
-          AccountType.values[int.parse(accountTypeIndex) - 1];
 
       Account account = Account(
         id: id,
@@ -185,6 +231,7 @@ class AccountScreen {
         accountType: accountTypeEnum,
       );
       await _accountService.updateAccount(account);
+      print("Conta atualizada com sucesso!");
     } on AccountNotFoundException catch (e) {
       print(e.toString());
     } catch (e) {
@@ -202,16 +249,22 @@ class AccountScreen {
       print("ID é obrigatório");
       return;
     }
+
     try {
+      // Verify if account exists before deletion
+      List<Account> accounts = await _accountService.getAll();
+      bool accountExists = accounts.any((account) => account.id == id);
+
+      if (!accountExists) {
+        throw AccountNotFoundException("Conta não encontrada com o ID: $id");
+      }
+
       await _accountService.deleteAccount(id);
-      print("Conta removida com sucesso");
+      print("Conta deletada com sucesso!");
     } on AccountNotFoundException catch (e) {
-      print(e.toString());
+      print("Erro: ${e.toString()}");
     } catch (e) {
-      print("Não foi possível remover a conta");
-      print(e.toString());
-    } finally {
-      print("${DateTime.now()} | Ocorreu uma tentativa de remoção");
+      print("Erro ao deletar conta: $e");
     }
   }
 }
