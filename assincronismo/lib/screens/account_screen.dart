@@ -94,8 +94,12 @@ class AccountScreen {
     String lastName = stdin.readLineSync()!;
     print("Saldo: ");
     double balance = double.parse(stdin.readLineSync()!);
-    print("Tipo de conta: ");
+    print(
+      "Tipo de conta: (1 - ambrosia, 2 - canjica, 3 - pudim, 4 - brigadeiro",
+    );
     String accountType = stdin.readLineSync()!;
+    int accountTypeIndex = int.parse(accountType);
+    AccountType accountTypeEnum = AccountType.values[accountTypeIndex - 1];
 
     // Generate ID as uuid using uuid package
     String id = Uuid().v4();
@@ -105,7 +109,7 @@ class AccountScreen {
       name: name,
       lastName: lastName,
       balance: balance,
-      accountType: accountType,
+      accountType: accountTypeEnum,
     );
     await _accountService.addAccount(account);
   }
@@ -125,15 +129,19 @@ class AccountScreen {
     double balance = double.parse(
       stdin.readLineSync() ?? oldAccount.balance.toString(),
     );
-    print("Tipo de conta: (${oldAccount.accountType}) ");
-    String accountType = stdin.readLineSync() ?? oldAccount.accountType;
+    String oldAccountTypeStr = oldAccount.accountType.toString();
+    print("Tipo de conta: (${oldAccountTypeStr}) ");
+    print("(1 - ambrosia, 2 - canjica, 3 - pudim, 4 - brigadeiro");
+    String accountType = stdin.readLineSync() ?? oldAccountTypeStr;
+    int accountTypeIndex = int.parse(accountType);
+    AccountType accountTypeEnum = AccountType.values[accountTypeIndex - 1];
 
     Account account = Account(
       id: id,
       name: name,
       lastName: lastName,
       balance: balance,
-      accountType: accountType,
+      accountType: accountTypeEnum,
     );
     await _accountService.updateAccount(account);
   }

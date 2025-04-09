@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 // Create enum for account types
-// enum AccountType { Ambrosia, Canjica, Pudim, Brigadeiro}
+enum AccountType { ambrosia, canjica, pudim, brigadeiro }
 
 class Account {
   String id;
   String name;
   String lastName;
   double balance;
-  String accountType;
+  AccountType accountType;
 
   // Construtor
   Account({
@@ -83,7 +83,7 @@ class Account {
     String? name,
     String? lastName,
     double? balance,
-    String? accountType,
+    AccountType? accountType,
   }) {
     return Account(
       id: id ?? this.id,

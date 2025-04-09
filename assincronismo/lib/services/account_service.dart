@@ -130,7 +130,7 @@ class AccountService {
         name: "",
         lastName: "",
         balance: 0,
-        accountType: "",
+        accountType: AccountType.ambrosia,
       );
       return emptyAccount;
     }
