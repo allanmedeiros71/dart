@@ -1,0 +1,7 @@
+.dart_tool/
+.git/
+.gitignore
+.packages
+build/
+*.g.dart
+README.md
