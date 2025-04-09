@@ -80,6 +80,8 @@ class AccountScreen {
     String lastName = stdin.readLineSync()!;
     print("Saldo: ");
     double balance = double.parse(stdin.readLineSync()!);
+    print("Tipo de conta: ");
+    String accountType = stdin.readLineSync()!;
 
     // Generate ID as uuid using uuid package
     String id = Uuid().v4();
@@ -89,28 +91,35 @@ class AccountScreen {
       name: name,
       lastName: lastName,
       balance: balance,
+      accountType: accountType,
     );
     await _accountService.addAccount(account);
   }
 
   _updateAccount() async {
-    print("Informe os dados da conta:");
+    print("Informe os novos dados da conta:");
+    print("Deixe em branco para manter o valor atual");
     print("ID: ");
     String id = stdin.readLineSync()!;
     Account oldAccount = await _accountService.getAccountById(id);
 
     print("Nome: (${oldAccount.name}) ");
-    String name = stdin.readLineSync()!;
+    String name = stdin.readLineSync() ?? oldAccount.name;
     print("Sobrenome: (${oldAccount.lastName}) ");
-    String lastName = stdin.readLineSync()!;
+    String lastName = stdin.readLineSync() ?? oldAccount.lastName;
     print("Saldo: (${oldAccount.balance}) ");
-    double balance = double.parse(stdin.readLineSync()!);
+    double balance = double.parse(
+      stdin.readLineSync() ?? oldAccount.balance.toString(),
+    );
+    print("Tipo de conta: (${oldAccount.accountType}) ");
+    String accountType = stdin.readLineSync() ?? oldAccount.accountType;
 
     Account account = Account(
       id: id,
       name: name,
       lastName: lastName,
       balance: balance,
+      accountType: accountType,
     );
     await _accountService.updateAccount(account);
   }

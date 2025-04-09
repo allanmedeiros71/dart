@@ -130,6 +130,7 @@ class AccountService {
         name: "",
         lastName: "",
         balance: 0,
+        accountType: "",
       );
       return emptyAccount;
     }
