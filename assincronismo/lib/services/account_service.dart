@@ -125,14 +125,7 @@ class AccountService {
       _streamController.add(
         "${DateTime.now()} | Não foi encontrada nenhuma conta com Id: $id",
       );
-      Account emptyAccount = Account(
-        id: "0",
-        name: "",
-        lastName: "",
-        balance: 0,
-        accountType: AccountType.ambrosia,
-      );
-      return emptyAccount;
+      throw AccountNotFoundException('Account with id $id not found');
     }
   }
 
@@ -191,4 +184,12 @@ class AccountService {
       return false;
     }
   }
+}
+
+class AccountNotFoundException implements Exception {
+  final String message;
+  AccountNotFoundException(this.message);
+
+  @override
+  String toString() => message;
 }
