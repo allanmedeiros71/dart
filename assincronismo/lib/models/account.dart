@@ -1,7 +1,16 @@
 import 'dart:convert';
 
 // Create enum for account types
-enum AccountType { ambrosia, canjica, pudim, brigadeiro }
+enum AccountType {
+  ambrosia("Ambrosia", 0.5),
+  canjica("Canjica", 0.33),
+  pudim("Pudim", 0.25),
+  brigadeiro("Brigadeiro", 0.01);
+
+  const AccountType(this.name, this.tax);
+  final String name;
+  final double tax;
+}
 
 class Account {
   String id;
@@ -29,7 +38,9 @@ class Account {
       name: map["name"],
       lastName: map["lastName"],
       balance: map["balance"],
-      accountType: map["accountType"],
+      accountType: AccountType.values.firstWhere(
+        (type) => type.name == map["accountType"],
+      ),
     );
   }
 
@@ -45,7 +56,7 @@ class Account {
       "name": name,
       "lastName": lastName,
       "balance": balance,
-      "accountType": accountType,
+      "accountType": accountType.name,
     };
   }
 
@@ -55,7 +66,11 @@ class Account {
   // Método toString() que retorna uma String que representa o objeto
   @override
   String toString() {
-    return 'Account(id: $id, name: $name, lastName: $lastName, balance: $balance, accountType: $accountType)';
+    return 'Account(id: $id, name: $name, lastName: $lastName, balance: $balance, accountType: ${accountType.name} (Taxa: ${accountType.tax}%)';
+  }
+
+  String toPrintable() {
+    return 'Account id: $id, Cliente: ${lastName.toUpperCase()}, $name. Detalhes da Conta: Saldo: R\$ $balance, Tipo: ${accountType.name} (Taxa: ${accountType.tax}%)';
   }
 
   // Método equals() que compara dois objetos Account

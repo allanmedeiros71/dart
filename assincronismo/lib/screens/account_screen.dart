@@ -58,10 +58,10 @@ class AccountScreen {
   _getAllAccounts() async {
     try {
       List<Account> listAccounts = await _accountService.getAll();
+      print("Listagem de contas");
+      print("==================");
       for (Account account in listAccounts) {
-        print(
-          "${account.id} - ${account.name} ${account.lastName} ${account.balance}",
-        );
+        print(account.toPrintable());
       }
     } on ClientException catch (e) {
       print("Não foi possível conectar ao servidor");
@@ -80,12 +80,28 @@ class AccountScreen {
   _getAccountById() async {
     print("Informe o ID da conta: ");
     String id = stdin.readLineSync()!;
-    Account account = await _accountService.getAccountById(id);
-    print(
-      "${account.id} - ${account.name} ${account.lastName} ${account.balance}",
-    );
+    if (id.isEmpty) {
+      print("ID é obrigatório");
+      return;
+    }
+    try {
+      Account account = await _accountService.getAccountById(id);
+      print("Detalhes da conta");
+      print("================");
+      print(account.toPrintable());
+    } on AccountNotFoundException catch (e) {
+      print(e.toString());
+    } catch (e) {
+      print("Não foi possível buscar a conta");
+      print(e.toString());
+    } finally {
+      print("${DateTime.now()} | Ocorreu uma tentativa de busca");
+    }
   }
 
+  // TODO: Tratar erro ao entrar dados em branco
+  // TODO: Validar o tipo do saldo
+  // TODO: Validar o tipo do tipo da conta
   _addAccount() async {
     print("Informe os dados da conta:");
     print("Nome: ");
@@ -112,43 +128,90 @@ class AccountScreen {
       accountType: accountTypeEnum,
     );
     await _accountService.addAccount(account);
+    print("Conta adicionada com sucesso");
+    print("Id: ${account.id}");
   }
 
+  // TODO: Tratar erro ao entrar dados em branco
+  // TODO: Validar o tipo do saldo
+  // TODO: Validar o tipo do tipo da conta
   _updateAccount() async {
     print("Informe os novos dados da conta:");
     print("Deixe em branco para manter o valor atual");
     print("ID: ");
     String id = stdin.readLineSync()!;
-    Account oldAccount = await _accountService.getAccountById(id);
+    if (id.isEmpty) {
+      print("ID é obrigatório");
+      return;
+    }
+    try {
+      Account oldAccount = await _accountService.getAccountById(id);
 
-    print("Nome: (${oldAccount.name}) ");
-    String name = stdin.readLineSync() ?? oldAccount.name;
-    print("Sobrenome: (${oldAccount.lastName}) ");
-    String lastName = stdin.readLineSync() ?? oldAccount.lastName;
-    print("Saldo: (${oldAccount.balance}) ");
-    double balance = double.parse(
-      stdin.readLineSync() ?? oldAccount.balance.toString(),
-    );
-    String oldAccountTypeStr = oldAccount.accountType.toString();
-    print("Tipo de conta: (${oldAccountTypeStr}) ");
-    print("(1 - ambrosia, 2 - canjica, 3 - pudim, 4 - brigadeiro");
-    String accountType = stdin.readLineSync() ?? oldAccountTypeStr;
-    int accountTypeIndex = int.parse(accountType);
-    AccountType accountTypeEnum = AccountType.values[accountTypeIndex - 1];
+      print("Nome: (${oldAccount.name}) ");
+      String name = stdin.readLineSync()!;
+      if (name.isEmpty) {
+        name = oldAccount.name;
+      }
 
-    Account account = Account(
-      id: id,
-      name: name,
-      lastName: lastName,
-      balance: balance,
-      accountType: accountTypeEnum,
-    );
-    await _accountService.updateAccount(account);
+      print("Sobrenome: (${oldAccount.lastName})");
+      String lastName = stdin.readLineSync()!;
+      if (lastName.isEmpty) {
+        lastName = oldAccount.lastName;
+      }
+
+      print("Saldo: (${oldAccount.balance})");
+      String balanceStr = stdin.readLineSync()!;
+      double balance;
+      if (balanceStr.isEmpty) {
+        balance = oldAccount.balance;
+      } else {
+        balance = double.parse(balanceStr);
+      }
+
+      print("Tipo de conta: (${oldAccount.accountType.name}) ");
+      print("(1 - Ambrosia, 2 - Canjica, 3 - Pudim, 4 - Brigadeiro");
+      String accountTypeIndex = stdin.readLineSync()!;
+      if (accountTypeIndex.isEmpty) {
+        accountTypeIndex = oldAccount.accountType.index.toString();
+      }
+      AccountType accountTypeEnum =
+          AccountType.values[int.parse(accountTypeIndex) - 1];
+
+      Account account = Account(
+        id: id,
+        name: name,
+        lastName: lastName,
+        balance: balance,
+        accountType: accountTypeEnum,
+      );
+      await _accountService.updateAccount(account);
+    } on AccountNotFoundException catch (e) {
+      print(e.toString());
+    } catch (e) {
+      print("Não foi possível atualizar a conta");
+      print(e.toString());
+    } finally {
+      print("${DateTime.now()} | Ocorreu uma tentativa de atualização");
+    }
   }
 
   _deleteAccount() async {
     print("Informe o ID da conta: ");
     String id = stdin.readLineSync()!;
-    await _accountService.deleteAccount(id);
+    if (id.isEmpty) {
+      print("ID é obrigatório");
+      return;
+    }
+    try {
+      await _accountService.deleteAccount(id);
+      print("Conta removida com sucesso");
+    } on AccountNotFoundException catch (e) {
+      print(e.toString());
+    } catch (e) {
+      print("Não foi possível remover a conta");
+      print(e.toString());
+    } finally {
+      print("${DateTime.now()} | Ocorreu uma tentativa de remoção");
+    }
   }
 }

@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:core';
 
 import 'package:assincronismo/env.dart';
 import 'package:assincronismo/models/account.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
+
+// TODO: Validar com try catch quando o ID fornecido não for encontrado em todos os métodos de pesquisa
 
 class AccountService {
   final StreamController<String> _streamController = StreamController<String>();
@@ -11,7 +14,10 @@ class AccountService {
   String url = "https://api.github.com/gists/65e7a2458fa78fee036c9129af64548b";
 
   Future<List<Account>> getAll() async {
-    Response response = await get(Uri.parse(url));
+    Response response = await get(
+      Uri.parse(url),
+      headers: {"Authorization": "Bearer $gitHupAuthToken"},
+    );
     _streamController.add("${DateTime.now()} | Requisição de leitura");
 
     Map<String, dynamic> mapResponse = json.decode(response.body);
@@ -27,6 +33,23 @@ class AccountService {
     }
 
     return listAccount;
+  }
+
+  Future<Account> getAccountById(String id) async {
+    List<Account> listAccounts = await getAll();
+    final index = listAccounts.indexWhere((account) => account.id == id);
+
+    if (index >= 0) {
+      _streamController.add(
+        "${DateTime.now()} | Encontrada conta com o Id: $id (${listAccounts[index].name})",
+      );
+      return listAccounts[index];
+    } else {
+      _streamController.add(
+        "${DateTime.now()} | Não foi encontrada nenhuma conta com Id: $id",
+      );
+      throw AccountNotFoundException('Conta com id $id não encontrada');
+    }
   }
 
   Future<bool> _saveAccounts(List<Account> listAccounts) async {
@@ -110,23 +133,6 @@ class AccountService {
     //     "${DateTime.now()} | Requisição falhou (${account.name})",
     //   );
     // }
-  }
-
-  Future<Account> getAccountById(String id) async {
-    List<Account> listAccounts = await getAll();
-    final index = listAccounts.indexWhere((account) => account.id == id);
-
-    if (index >= 0) {
-      _streamController.add(
-        "${DateTime.now()} | Encontrada conta com o Id: $id (${listAccounts[index].name})",
-      );
-      return listAccounts[index];
-    } else {
-      _streamController.add(
-        "${DateTime.now()} | Não foi encontrada nenhuma conta com Id: $id",
-      );
-      throw AccountNotFoundException('Account with id $id not found');
-    }
   }
 
   Future<bool> updateAccount(Account newAccount) async {
