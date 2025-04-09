@@ -13,11 +13,11 @@ enum AccountType {
 }
 
 class Account {
-  String id;
-  String name;
-  String lastName;
-  double balance;
-  AccountType accountType;
+  final String id;
+  final String name;
+  final String lastName;
+  final double balance;
+  final AccountType accountType;
 
   // Construtor
   Account({
@@ -26,7 +26,12 @@ class Account {
     required this.lastName,
     required this.balance,
     required this.accountType,
-  });
+  }) {
+    if (id.isEmpty) throw ArgumentError('id cannot be empty');
+    if (name.isEmpty) throw ArgumentError('name cannot be empty');
+    if (lastName.isEmpty) throw ArgumentError('lastName cannot be empty');
+    if (balance < 0) throw ArgumentError('balance cannot be negative');
+  }
 
   // Construtor especial que recebe um map ao invés dos parâmetros individualmente
   // O uso do factoru permite criar um construtor baseado em outro. No caso, Account()
@@ -76,7 +81,7 @@ class Account {
   // Método equals() que compara dois objetos Account
   @override
   bool operator ==(Object other) {
-    if (identical(other, other)) return true;
+    if (identical(this, other)) return true;
 
     return other is Account &&
         other.id == id &&
@@ -89,7 +94,7 @@ class Account {
   // Método hashCode() que retorna um int que representa o objeto
   @override
   int get hashCode {
-    return id.hashCode;
+    return Object.hash(id, name, lastName, balance, accountType);
   }
 
   // Método copyWith() que retorna uma nova instância de Account

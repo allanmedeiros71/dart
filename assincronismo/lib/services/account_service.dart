@@ -1,194 +1,160 @@
 import 'dart:async';
 import 'dart:core';
+import 'dart:io';
 
-import 'package:assincronismo/env.dart';
+import 'package:assincronismo/config/env.dart';
 import 'package:assincronismo/models/account.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
-// TODO: Validar com try catch quando o ID fornecido não for encontrado em todos os métodos de pesquisa
-
+/// Service responsible for managing account operations through the GitHub Gist API
 class AccountService {
   final StreamController<String> _streamController = StreamController<String>();
   Stream<String> get streamInfos => _streamController.stream;
-  String url = "https://api.github.com/gists/65e7a2458fa78fee036c9129af64548b";
 
+  /// Retrieves all accounts from the API
   Future<List<Account>> getAll() async {
-    Response response = await get(
-      Uri.parse(url),
-      headers: {"Authorization": "Bearer $gitHupAuthToken"},
-    );
-    _streamController.add("${DateTime.now()} | Requisição de leitura");
+    try {
+      final response = await get(
+        Uri.parse(Env.githubGistUrl),
+        headers: {"Authorization": "Bearer ${Env.githubAuthToken}"},
+      );
+      _logInfo("Requisição de leitura");
 
-    Map<String, dynamic> mapResponse = json.decode(response.body);
-    List<dynamic> listDynamic = json.decode(
-      mapResponse["files"]["account.json"]['content'],
-    );
+      if (response.statusCode != 200) {
+        throw HttpException('Failed to fetch accounts: ${response.statusCode}');
+      }
 
-    List<Account> listAccount = [];
-    for (dynamic dyn in listDynamic) {
-      Map<String, dynamic> mapAccount = dyn as Map<String, dynamic>;
-      Account account = Account.fromMap(mapAccount);
-      listAccount.add(account);
+      final mapResponse = json.decode(response.body);
+      final listDynamic = json.decode(
+        mapResponse["files"]["account.json"]['content'],
+      );
+
+      return [
+        for (final item in listDynamic)
+          Account.fromMap(item as Map<String, dynamic>),
+      ];
+    } catch (e) {
+      _logError("Falha ao carregar contas: $e");
+      rethrow;
     }
-
-    return listAccount;
   }
 
+  /// Retrieves a specific account by its ID
   Future<Account> getAccountById(String id) async {
-    List<Account> listAccounts = await getAll();
-    final index = listAccounts.indexWhere((account) => account.id == id);
+    try {
+      final listAccounts = await getAll();
+      final account = listAccounts.firstWhere(
+        (account) => account.id == id,
+        orElse: () => throw AccountNotFoundException(
+          'Conta com id $id não encontrada',
+        ),
+      );
 
-    if (index >= 0) {
-      _streamController.add(
-        "${DateTime.now()} | Encontrada conta com o Id: $id (${listAccounts[index].name})",
-      );
-      return listAccounts[index];
-    } else {
-      _streamController.add(
-        "${DateTime.now()} | Não foi encontrada nenhuma conta com Id: $id",
-      );
-      throw AccountNotFoundException('Conta com id $id não encontrada');
+      _logInfo("Encontrada conta com o Id: $id (${account.name})");
+      return account;
+    } catch (e) {
+      if (e is AccountNotFoundException) {
+        _logError("Não foi encontrada nenhuma conta com Id: $id");
+      }
+      rethrow;
     }
   }
 
-  Future<bool> _saveAccounts(List<Account> listAccounts) async {
-    List<Map<String, dynamic>> listContent = [];
-    for (Account account in listAccounts) {
-      listContent.add(account.toMap());
-    }
+  /// Saves the list of accounts to the API
+  Future<void> _saveAccounts(List<Account> accounts) async {
+    try {
+      final content = json.encode([
+        for (final account in accounts) account.toMap(),
+      ]);
 
-    String content = json.encode(listContent);
+      final response = await post(
+        Uri.parse(Env.githubGistUrl),
+        headers: {"Authorization": "Bearer ${Env.githubAuthToken}"},
+        body: json.encode({
+          "description": "Alteração de accounts.json via API com Dart",
+          "public": true,
+          "files": {
+            "account.json": {"content": content},
+          },
+        }),
+      );
 
-    Response response = await post(
-      Uri.parse(url),
-      headers: {"Authorization": "Bearer $githubApiKey"},
-      body: json.encode({
-        "descrption": "Alteração de accounts.json via API com Dart",
-        "public": true,
-        "files": {
-          "account.json": {"content": content},
-        },
-      }),
-    );
+      if (response.statusCode < 200 || response.statusCode > 299) {
+        throw HttpException('Failed to save accounts: ${response.statusCode}');
+      }
 
-    if (response.statusCode.toString()[0] == "2") {
-      _streamController.add("${DateTime.now()} | Gravação bem sucedida");
-      return true;
-    } else {
-      _streamController.add("${DateTime.now()} | Gravação falhou");
-      return false;
+      _logInfo("Gravação bem sucedida");
+    } catch (e) {
+      _logError("Gravação falhou: $e");
+      rethrow;
     }
   }
 
-  addAccount(Account newAccount) async {
-    List<Account> listAccounts = await getAll();
-    int index = listAccounts.indexWhere(
-      (account) => account.id == newAccount.id,
-    );
-    if (index >= 0) {
-      _streamController.add(
-        "${DateTime.now()} | Requisição falhou (Conta já existente - ${newAccount.name})",
-      );
-      return;
+  /// Adds a new account
+  Future<void> addAccount(Account newAccount) async {
+    try {
+      final listAccounts = await getAll();
+      if (listAccounts.any((account) => account.id == newAccount.id)) {
+        throw StateError('Conta já existente');
+      }
+
+      listAccounts.add(newAccount);
+      await _saveAccounts(listAccounts);
+      _logInfo("Requisição de adição bem sucedida (${newAccount.name})");
+    } catch (e) {
+      _logError("Falha ao adicionar conta ${newAccount.name}: $e");
+      rethrow;
     }
-    listAccounts.add(newAccount);
-
-    bool result = await _saveAccounts(listAccounts);
-    if (result) {
-      _streamController.add(
-        "${DateTime.now()} | Requisição de adição bem sucedida (${newAccount.name})",
-      );
-    } else {
-      _streamController.add(
-        "${DateTime.now()} | Requisição falhou (${newAccount.name})",
-      );
-    }
-
-    // List<Map<String, dynamic>> listContent = [];
-    // for (Account account in listAccounts) {
-    //   listContent.add(account.toMap());
-    // }
-
-    // String content = json.encode(listContent);
-
-    // Response response = await post(
-    //   Uri.parse(url),
-    //   headers: {"Authorization": "Bearer $githubApiKey"},
-    //   body: json.encode({
-    //     "descrption": "Alteração de accounts.json via API com Dart",
-    //     "public": true,
-    //     "files": {
-    //       "account.json": {"content": content},
-    //     },
-    //   }),
-    // );
-
-    // if (response.statusCode.toString()[0] == "2") {
-    //   _streamController.add(
-    //     "${DateTime.now()} | Requisição de adição bem sucedida (${account.name})",
-    //   );
-    // } else {
-    //   _streamController.add(
-    //     "${DateTime.now()} | Requisição falhou (${account.name})",
-    //   );
-    // }
   }
 
-  Future<bool> updateAccount(Account newAccount) async {
-    List<Account> listAccounts = await getAll();
-    final index = listAccounts.indexWhere(
-      (account) => account.id == newAccount.id,
-    );
-    if (index >= 0) {
-      // Achou
+  /// Updates an existing account
+  Future<void> updateAccount(Account newAccount) async {
+    try {
+      final listAccounts = await getAll();
+      final index = listAccounts.indexWhere(
+        (account) => account.id == newAccount.id,
+      );
+
+      if (index < 0) {
+        throw AccountNotFoundException('Conta não encontrada');
+      }
+
       listAccounts[index] = newAccount;
-      bool result = await _saveAccounts(listAccounts);
-      if (result) {
-        _streamController.add(
-          "${DateTime.now()} | Requisição de alteração bem sucedida (${listAccounts[index].name})",
-        );
-        return true;
-      } else {
-        _streamController.add(
-          "${DateTime.now()} | Não foi possível realizar a alteração (${listAccounts[index].name})",
-        );
-        return false;
-      }
-    } else {
-      _streamController.add(
-        "${DateTime.now()} | Não foi possível realizar a alteração. Conta não encontrada (${newAccount.name})",
-      );
-      return false;
+      await _saveAccounts(listAccounts);
+      _logInfo("Requisição de alteração bem sucedida (${newAccount.name})");
+    } catch (e) {
+      _logError("Falha ao atualizar conta ${newAccount.name}: $e");
+      rethrow;
     }
   }
 
-  Future<bool> deleteAccount(String id) async {
-    List<Account> listAccounts = await getAll();
+  /// Deletes an account by its ID
+  Future<void> deleteAccount(String id) async {
+    try {
+      final listAccounts = await getAll();
+      final index = listAccounts.indexWhere((account) => account.id == id);
 
-    // listAccounts.removeWhere((account) => account.id == id);
-    final index = listAccounts.indexWhere((account) => account.id == id);
-    if (index >= 0) {
-      // Achou
-      listAccounts.removeAt(index);
-      bool result = await _saveAccounts(listAccounts);
-      if (result) {
-        _streamController.add(
-          "${DateTime.now()} | Requisição de exclusão bem sucedida (Id: $id)",
-        );
-        return true;
-      } else {
-        _streamController.add(
-          "${DateTime.now()} | Não foi possível realizar a exclusão (Id: )",
-        );
-        return true;
+      if (index < 0) {
+        throw AccountNotFoundException('Conta não encontrada');
       }
-    } else {
-      _streamController.add(
-        "${DateTime.now()} | Não foi possível realizar a alteração. Conta não encontrada ($id)",
-      );
-      return false;
+
+      final accountName = listAccounts[index].name;
+      listAccounts.removeAt(index);
+      await _saveAccounts(listAccounts);
+      _logInfo("Requisição de exclusão bem sucedida ($accountName)");
+    } catch (e) {
+      _logError("Falha ao excluir conta $id: $e");
+      rethrow;
     }
+  }
+
+  void _logInfo(String message) {
+    _streamController.add("${DateTime.now()} | $message");
+  }
+
+  void _logError(String message) {
+    _streamController.add("${DateTime.now()} | $message");
   }
 }
 
