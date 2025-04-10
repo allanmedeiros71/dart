@@ -19,9 +19,6 @@ class Account {
   final double balance;
   final AccountType? accountType;
 
-  // Getter for balance (optional, since it's already implicit)
-  double get currentBalance => balance;
-
   // Construtor
   Account({
     required this.id,
