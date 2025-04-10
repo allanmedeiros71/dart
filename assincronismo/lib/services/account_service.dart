@@ -62,7 +62,7 @@ class AccountService {
   }
 
   /// Saves the list of accounts to the API
-  Future<void> _saveAccounts(List<Account> accounts) async {
+  Future<void> _save(List<Account> accounts) async {
     try {
       final content = json.encode([
         for (final account in accounts) account.toMap(),
@@ -100,7 +100,7 @@ class AccountService {
       }
 
       listAccounts.add(newAccount);
-      await _saveAccounts(listAccounts);
+      await _save(listAccounts);
       _logInfo("Requisição de adição bem sucedida (${newAccount.name})");
     } catch (e) {
       _logError("Falha ao adicionar conta ${newAccount.name}: $e");
@@ -121,7 +121,7 @@ class AccountService {
       }
 
       listAccounts[index] = newAccount;
-      await _saveAccounts(listAccounts);
+      await _save(listAccounts);
       _logInfo("Requisição de alteração bem sucedida (${newAccount.name})");
     } catch (e) {
       _logError("Falha ao atualizar conta ${newAccount.name}: $e");
@@ -141,7 +141,7 @@ class AccountService {
 
       final accountName = listAccounts[index].name;
       listAccounts.removeAt(index);
-      await _saveAccounts(listAccounts);
+      await _save(listAccounts);
       _logInfo("Requisição de exclusão bem sucedida ($accountName)");
     } catch (e) {
       _logError("Falha ao excluir conta $id: $e");

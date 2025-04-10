@@ -1,6 +1,7 @@
 import 'package:assincronismo/models/account.dart';
 
-double calculateTaxesByAccount(Account account, double amount) {
+double calculateTaxesByAccount(
+    {required Account sender, required double amount}) {
   if (amount < 5000) {
     return 0;
   }
@@ -8,15 +9,18 @@ double calculateTaxesByAccount(Account account, double amount) {
   // Canjica: 0.33% para transações acima de R$5000.
   // Pudim: 0.25% para transações acima de R$5000.
   // Brigadeiro: 0.01% para transações acima de R$5000.
-  if (account.accountType == "Ambrosia") {
-    return amount * 0.005;
-  } else if (account.accountType == "Canjica") {
-    return amount * 0.0033;
-  } else if (account.accountType == "Pudim") {
-    return amount * 0.0025;
-  } else if (account.accountType == "Brigadeiro") {
-    return amount * 0.0001;
+  if (sender.accountType != null) {
+    if (sender.accountType == AccountType.ambrosia) {
+      return amount * 0.005;
+    } else if (sender.accountType == AccountType.canjica) {
+      return amount * 0.0033;
+    } else if (sender.accountType == AccountType.pudim) {
+      return amount * 0.0025;
+    } else {
+      // Brigadeiro
+      return amount * 0.0001;
+    }
   } else {
-    return 0;
+    return 0.1;
   }
 }

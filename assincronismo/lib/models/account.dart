@@ -17,7 +17,10 @@ class Account {
   final String name;
   final String lastName;
   final double balance;
-  final AccountType accountType;
+  final AccountType? accountType;
+
+  // Getter for balance (optional, since it's already implicit)
+  double get currentBalance => balance;
 
   // Construtor
   Account({
@@ -43,9 +46,11 @@ class Account {
       name: map["name"],
       lastName: map["lastName"],
       balance: map["balance"],
-      accountType: AccountType.values.firstWhere(
-        (type) => type.name == map["accountType"],
-      ),
+      accountType: map["accountType"] != null
+          ? AccountType.values.firstWhere(
+              (type) => type.name == map["accountType"],
+            )
+          : null,
     );
   }
 
@@ -61,7 +66,7 @@ class Account {
       "name": name,
       "lastName": lastName,
       "balance": balance,
-      "accountType": accountType.name,
+      "accountType": accountType?.name,
     };
   }
 
@@ -71,11 +76,11 @@ class Account {
   // Método toString() que retorna uma String que representa o objeto
   @override
   String toString() {
-    return 'Account(id: $id, name: $name, lastName: $lastName, balance: $balance, accountType: ${accountType.name} (Taxa: ${accountType.tax}%)';
+    return 'Account(id: $id, name: $name, lastName: $lastName, balance: $balance, accountType: ${accountType?.name} (Taxa: ${accountType?.tax}%)';
   }
 
   String toPrintable() {
-    return 'Account id: $id, Cliente: ${lastName.toUpperCase()}, $name. Detalhes da Conta: Saldo: R\$ $balance, Tipo: ${accountType.name} (Taxa: ${accountType.tax}%)';
+    return 'Account id: $id\nCliente: ${lastName.toUpperCase()}, $name.\nDetalhes da Conta:\n  Saldo: R\$ $balance\n  Tipo: ${accountType?.name} (Taxa: ${accountType?.tax}%)\n';
   }
 
   // Método equals() que compara dois objetos Account

@@ -84,4 +84,8 @@ class Transaction {
       taxes: taxes ?? this.taxes,
     );
   }
+
+  String toPrintable() {
+    return 'Transaction(id: $id\n senderAccountId: $senderAccountId\n receiverAccountId: $receiverAccountId\n date: $date\n amount: $amount\n taxes: $taxes';
+  }
 }

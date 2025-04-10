@@ -4,17 +4,23 @@ import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 import 'package:assincronismo/models/account.dart';
 import 'package:assincronismo/services/account_service.dart';
+import 'package:assincronismo/services/transaction_service.dart';
 
 /// Screen responsible for handling user interactions with accounts
 class AccountScreen {
   final AccountService _accountService = AccountService();
+  final TransactionService _transactionService = TransactionService();
   static const _menuOptions = {
     "1": "Ver todas as contas",
     "2": "Listar uma conta por ID",
     "3": "Adicionar uma conta",
     "4": "Atualizar uma conta",
     "5": "Remover uma conta",
-    "6": "Sair",
+    "6": "Ver todas as transações",
+    "7": "Ver as transações de uma conta",
+    "8": "Ver uma transação por ID",
+    "9": "Criar uma transferência",
+    "0": "Sair",
   };
 
   void initializeStream() {
@@ -35,9 +41,9 @@ class AccountScreen {
       try {
         switch (option) {
           case "1":
-            await _getAllAccounts();
+            await _printAllAccounts();
           case "2":
-            await _getAccountById();
+            await _printAccountById();
           case "3":
             await _addAccount();
           case "4":
@@ -45,6 +51,14 @@ class AccountScreen {
           case "5":
             await _deleteAccount();
           case "6":
+            await _printAllTransactions();
+          case "7":
+            await _printTransactionsByAccountId();
+          case "8":
+            await _printTransactionById();
+          case "9":
+            await _makeTransaction();
+          case "0":
             isRunning = false;
             print("\nObrigado por usar o Allbot, até mais!");
           default:
@@ -106,7 +120,7 @@ class AccountScreen {
     }
   }
 
-  Future<void> _getAllAccounts() async {
+  Future<void> _printAllAccounts() async {
     try {
       final accounts = await _accountService.getAll();
       print("\nListagem de contas");
@@ -127,7 +141,7 @@ class AccountScreen {
     }
   }
 
-  Future<void> _getAccountById() async {
+  Future<void> _printAccountById() async {
     try {
       final id = _readInput("Informe o ID da conta:");
       final account = await _accountService.getAccountById(id);
@@ -188,7 +202,7 @@ class AccountScreen {
         required: false,
       );
 
-      print("\nTipo de conta atual: ${oldAccount.accountType.name}");
+      print("\nTipo de conta atual: ${oldAccount.accountType?.name}");
       print("1 - Ambrosia, 2 - Canjica, 3 - Pudim, 4 - Brigadeiro");
       final accountTypeStr = _readInput("", required: false);
 
@@ -198,10 +212,9 @@ class AccountScreen {
         lastName: lastName.isEmpty ? oldAccount.lastName : lastName,
         balance:
             balanceStr.isEmpty ? oldAccount.balance : _parseBalance(balanceStr),
-        accountType:
-            accountTypeStr.isEmpty
-                ? oldAccount.accountType
-                : _parseAccountType(accountTypeStr),
+        accountType: accountTypeStr.isEmpty
+            ? oldAccount.accountType
+            : _parseAccountType(accountTypeStr),
       );
 
       await _accountService.updateAccount(account);
@@ -223,6 +236,92 @@ class AccountScreen {
       print("\nErro: $e\n");
     } catch (e) {
       print("\nErro ao deletar conta: $e\n");
+    }
+  }
+
+  Future<void> _printAllTransactions() async {
+    try {
+      final transactions = await _transactionService.getAll();
+      print("\nListagem de transações");
+      print("==================");
+      for (final transaction in transactions) {
+        print(transaction.toPrintable());
+        print("==================\n");
+      }
+    } on ClientException catch (e) {
+      print("\nNão foi possível conectar ao servidor");
+      print("Tente novamente mais tarde");
+      print("Erro: ${e.message}");
+      if (e.uri != null) print("URI: ${e.uri}");
+    } on Exception catch (e) {
+      print("\nNão foi possível listar as transações");
+      print("Tente novamente mais tarde");
+      print("Erro: $e\n");
+    }
+  }
+
+  Future<void> _printTransactionsByAccountId() async {
+    try {
+      final id = _readInput("Informe o ID da conta:");
+      final transactions =
+          await _transactionService.getTransactionsByAccountId(id);
+      print("\nTransações da conta $id");
+      print("==================");
+      for (final transaction in transactions) {
+        print(transaction.toPrintable());
+        print("==================\n");
+      }
+    } on ClientException catch (e) {
+      print("\nNão foi possível conectar ao servidor");
+      print("Tente novamente mais tarde");
+      print("Erro: ${e.message}");
+      if (e.uri != null) print("URI: ${e.uri}");
+    } on Exception catch (e) {
+      print("\nNão foi possível listar as transações");
+      print("Tente novamente mais tarde");
+      print("Erro: $e\n");
+    }
+  }
+
+  Future<void> _printTransactionById() async {
+    try {
+      final id = _readInput("Informe o ID da transação:");
+      final transaction = await _transactionService.getTransactionById(id);
+      print("\nDetalhes da transação");
+      print("================");
+      print(await _transactionService.getTransactionDetails(transaction));
+      print("\n");
+    } on TransactionNotFoundException catch (e) {
+      print("\n$e\n");
+    } catch (e) {
+      print("\nNão foi possível buscar a transação");
+      print("Tente novamente mais tarde");
+      print("Erro: $e\n");
+    }
+  }
+
+  Future<void> _makeTransaction() async {
+    try {
+      print("\nInforme os dados da transação:");
+      final senderAccountId = _readInput("ID da conta de remetente:");
+      final receiverAccountId = _readInput("ID da conta de destinatário:");
+      final amount = _parseBalance(_readInput("Valor:"));
+
+      await _transactionService.makeTransaction(
+        senderAccountId: senderAccountId,
+        receiverAccountId: receiverAccountId,
+        amount: amount,
+      );
+      print("\nTransação realizada com sucesso!\n");
+    } on ClientException catch (e) {
+      print("\nNão foi possível conectar ao servidor");
+      print("Tente novamente mais tarde");
+      print("Erro: ${e.message}");
+      if (e.uri != null) print("URI: ${e.uri}");
+    } on Exception catch (e) {
+      print("\nNão foi possível realizar a transação");
+      print("Tente novamente mais tarde");
+      print("Erro: $e\n");
     }
   }
 }
