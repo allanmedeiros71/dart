@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:assincronismo/exceptions/domain_exceptions.dart';
 import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 import 'package:assincronismo/models/account.dart';

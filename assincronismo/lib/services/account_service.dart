@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:core';
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:assincronismo/config/env.dart';
 import 'package:assincronismo/models/account.dart';
 import 'package:http/http.dart';
-import 'dart:convert';
+import 'package:assincronismo/exceptions/index.dart';
 
 /// Service responsible for managing account operations through the GitHub Gist API
 class AccountService {
@@ -19,10 +18,12 @@ class AccountService {
         Uri.parse(Env.githubGistUrl),
         headers: {"Authorization": "Bearer ${Env.githubAuthToken}"},
       );
-      _logInfo("Requisição de leitura");
 
       if (response.statusCode != 200) {
-        throw HttpException('Failed to fetch accounts: ${response.statusCode}');
+        throw HttpException(
+          'Failed to fetch accounts: ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
       }
 
       final mapResponse = json.decode(response.body);
@@ -46,17 +47,13 @@ class AccountService {
       final listAccounts = await getAll();
       final account = listAccounts.firstWhere(
         (account) => account.id == id,
-        orElse: () => throw AccountNotFoundException(
-          'Conta com id $id não encontrada',
-        ),
+        orElse: () => throw AccountNotFoundException('Conta não encontrada'),
       );
 
       _logInfo("Encontrada conta com o Id: $id (${account.name})");
       return account;
     } catch (e) {
-      if (e is AccountNotFoundException) {
-        _logError("Não foi encontrada nenhuma conta com Id: $id");
-      }
+      _logError("Falha ao buscar conta: $e");
       rethrow;
     }
   }
@@ -81,7 +78,10 @@ class AccountService {
       );
 
       if (response.statusCode < 200 || response.statusCode > 299) {
-        throw HttpException('Failed to save accounts: ${response.statusCode}');
+        throw HttpException(
+          'Failed to save accounts: ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
       }
 
       _logInfo("Gravação bem sucedida");
@@ -96,14 +96,17 @@ class AccountService {
     try {
       final listAccounts = await getAll();
       if (listAccounts.any((account) => account.id == newAccount.id)) {
-        throw StateError('Conta já existente');
+        throw AccountAlreadyExistsException('Conta já existente');
       }
 
       listAccounts.add(newAccount);
       await _save(listAccounts);
       _logInfo("Requisição de adição bem sucedida (${newAccount.name})");
+    } on AccountAlreadyExistsException catch (e) {
+      _logError("Falha ao adicionar conta: $e");
+      rethrow;
     } catch (e) {
-      _logError("Falha ao adicionar conta ${newAccount.name}: $e");
+      _logError("Falha ao adicionar conta: $e");
       rethrow;
     }
   }
@@ -123,8 +126,11 @@ class AccountService {
       listAccounts[index] = newAccount;
       await _save(listAccounts);
       _logInfo("Requisição de alteração bem sucedida (${newAccount.name})");
+    } on AccountNotFoundException catch (e) {
+      _logError("Falha ao atualizar conta: $e");
+      rethrow;
     } catch (e) {
-      _logError("Falha ao atualizar conta ${newAccount.name}: $e");
+      _logError("Falha ao atualizar conta: $e");
       rethrow;
     }
   }
@@ -143,8 +149,11 @@ class AccountService {
       listAccounts.removeAt(index);
       await _save(listAccounts);
       _logInfo("Requisição de exclusão bem sucedida ($accountName)");
+    } on AccountNotFoundException catch (e) {
+      _logError("Falha ao excluir conta: $e");
+      rethrow;
     } catch (e) {
-      _logError("Falha ao excluir conta $id: $e");
+      _logError("Falha ao excluir conta: $e");
       rethrow;
     }
   }
@@ -156,12 +165,4 @@ class AccountService {
   void _logError(String message) {
     _streamController.add("${DateTime.now()} | $message");
   }
-}
-
-class AccountNotFoundException implements Exception {
-  final String message;
-  AccountNotFoundException(this.message);
-
-  @override
-  String toString() => message;
 }

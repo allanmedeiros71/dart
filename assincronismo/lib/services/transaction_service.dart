@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:assincronismo/config/env.dart';
 import 'package:assincronismo/helpers/helper_taxes.dart';
@@ -9,6 +8,7 @@ import 'package:assincronismo/models/transaction.dart';
 import 'package:assincronismo/services/account_service.dart';
 import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
+import 'package:assincronismo/exceptions/index.dart';
 
 class TransactionService {
   final AccountService _accountService = AccountService();
@@ -29,10 +29,12 @@ class TransactionService {
         Uri.parse(Env.githubGistUrl),
         headers: {"Authorization": "Bearer ${Env.githubAuthToken}"},
       );
-      _logInfo("Requisição de leitura");
 
       if (response.statusCode != 200) {
-        throw Exception("Erro ao buscar transações");
+        throw HttpException(
+          'Failed to fetch transactions: ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
       }
 
       final mapResponse = json.decode(response.body);
@@ -97,7 +99,8 @@ class TransactionService {
 
       if (response.statusCode < 200 || response.statusCode > 299) {
         throw HttpException(
-            'Failed to save transactions: ${response.statusCode}');
+            'Failed to save transactions: ${response.statusCode}',
+            statusCode: response.statusCode);
       }
 
       _logInfo("Gravação bem sucedida");
@@ -137,16 +140,19 @@ class TransactionService {
         date: DateTime.now(),
         taxes: 0,
       );
+
       // verify if sender and receiver accounts exist
       List<Account> listAccounts = await _accountService.getAll();
 
       final senderAccount = listAccounts.firstWhere(
         (account) => account.id == senderAccountId,
-        orElse: () => throw StateError('Conta de remetente não encontrada'),
+        orElse: () =>
+            throw AccountNotFoundException('Conta de remetente não encontrada'),
       );
       final receiverAccount = listAccounts.firstWhere(
         (account) => account.id == receiverAccountId,
-        orElse: () => throw StateError('Conta de destinatário não encontrada'),
+        orElse: () => throw AccountNotFoundException(
+            'Conta de destinatário não encontrada'),
       );
 
       // Calculate taxes
@@ -156,28 +162,36 @@ class TransactionService {
 
       // verify if sender has enough balance
       if (senderAccount.balance < amount + tax) {
-        throw StateError('Saldo insuficiente');
+        throw InsufficientBalanceException('Saldo insuficiente');
       }
 
-      // The actual problem isn't that we're trying to use balance as a setter,
-      // but rather that we're trying to modify an immutable account's balance.
-      // The good news is that your code is already following the correct pattern!
-      // You're creating new Account instances with updated balances and then
-      // using AccountService().updateAccount() to persist these changes. This is
-      // exactly the right approach when working with immutable objects.
-      // You're already:
-      // - Creating new Account instances with updated balances
-      // - Using AccountService().updateAccount() to save the changes
-      // - Maintaining immutability by never trying to modify the balance directly
+      // Create new account instances with updated balances
+      final updatedSenderAccount = Account(
+        id: senderAccount.id,
+        name: senderAccount.name,
+        lastName: senderAccount.lastName,
+        balance: senderAccount.balance - (amount + tax),
+        accountType: senderAccount.accountType,
+      );
 
-      await _accountService.updateAccount(senderAccount.copyWith(
-          balance: senderAccount.balance - (amount + tax)));
-      await _accountService.updateAccount(
-          receiverAccount.copyWith(balance: receiverAccount.balance + amount));
+      final updatedReceiverAccount = Account(
+        id: receiverAccount.id,
+        name: receiverAccount.name,
+        lastName: receiverAccount.lastName,
+        balance: receiverAccount.balance + amount,
+        accountType: receiverAccount.accountType,
+      );
 
+      await _accountService.updateAccount(updatedSenderAccount);
+      await _accountService.updateAccount(updatedReceiverAccount);
       await addTransaction(newTransaction);
-
       _logInfo("Requisição de transação bem sucedida (${newTransaction.id})");
+    } on ClientException catch (e) {
+      _logError("Falha ao realizar transação: $e");
+      rethrow;
+    } on AppException catch (e) {
+      _logError("Falha ao realizar transação: $e");
+      rethrow;
     } catch (e) {
       _logError("Falha ao realizar transação: $e");
       rethrow;
@@ -190,11 +204,13 @@ class TransactionService {
 
       final senderAccount = listAccounts.firstWhere(
         (account) => account.id == transaction.senderAccountId,
-        orElse: () => throw StateError('Conta de remetente não encontrada'),
+        orElse: () =>
+            throw AccountNotFoundException('Conta de remetente não encontrada'),
       );
       final receiverAccount = listAccounts.firstWhere(
         (account) => account.id == transaction.receiverAccountId,
-        orElse: () => throw StateError('Conta de destinatário não encontrada'),
+        orElse: () => throw AccountNotFoundException(
+            'Conta de destinatário não encontrada'),
       );
 
       return '''
@@ -216,11 +232,4 @@ ${receiverAccount.toPrintable()}
       rethrow;
     }
   }
-}
-
-class TransactionNotFoundException implements Exception {
-  final String id;
-  const TransactionNotFoundException(this.id);
-  @override
-  String toString() => "Transação com ID $id não encontrada";
 }
