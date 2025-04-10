@@ -314,6 +314,8 @@ class AccountScreen {
         amount: amount,
       );
       print("\nTransação realizada com sucesso!\n");
+    } on InsufficientBalanceException catch (e) {
+      print("\n${e.toString()}\n");
     } on ClientException catch (e) {
       print("\nNão foi possível conectar ao servidor");
       print("Tente novamente mais tarde");

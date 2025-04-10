@@ -162,7 +162,11 @@ class TransactionService {
 
       // verify if sender has enough balance
       if (senderAccount.balance < amount + tax) {
-        throw InsufficientBalanceException('Saldo insuficiente');
+        throw InsufficientBalanceException(
+          account: senderAccount,
+          amount: amount,
+          taxes: tax,
+        );
       }
 
       // Create new account instances with updated balances
