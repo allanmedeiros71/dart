@@ -16,19 +16,22 @@ class MainScreen extends StatelessWidget {
 
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "${review.name} (${review.year})",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Row(children: stars),
-            // Only date in dd/MM/yyyy format
-            Text(formatDate(review.date, format: "dd/MM/yyyy")),
-            Text(review.review),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "${review.name} (${review.year})",
+                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+              ),
+              Row(children: stars),
+              // Only date in dd/MM/yyyy format
+              Text("Data: ${formatDate(review.date, format: "dd/MM/yyyy")}", style: const TextStyle(fontSize: 18)),
+              Text(review.review, style: const TextStyle(fontSize: 18)),
+            ],
+          ),
         ),
       ),
     );
