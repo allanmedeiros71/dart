@@ -1,0 +1,359 @@
+[
+  {
+    "nome": "Clube da Luta",
+    "estrelas": 3,
+    "review": "Narrativa envolvente e atuações marcantes.",
+    "data": "2024-04-01T00:00:00",
+    "ano_lancamento": 1999
+  },
+  {
+    "nome": "O Poderoso Chefão",
+    "estrelas": 4,
+    "review": "Imperdível para fãs do gênero.",
+    "data": "2024-03-31T00:00:00",
+    "ano_lancamento": 1972
+  },
+  {
+    "nome": "Forrest Gump",
+    "estrelas": 5,
+    "review": "Simplesmente uma obra-prima.",
+    "data": "2024-03-30T00:00:00",
+    "ano_lancamento": 1994
+  },
+  {
+    "nome": "Matrix",
+    "estrelas": 3,
+    "review": "Emocionante, profundo e inesquecível.",
+    "data": "2024-03-29T00:00:00",
+    "ano_lancamento": 1999
+  },
+  {
+    "nome": "Pulp Fiction",
+    "estrelas": 4,
+    "review": "Um filme que te faz pensar por dias.",
+    "data": "2024-03-28T00:00:00",
+    "ano_lancamento": 1994
+  },
+  {
+    "nome": "Interestelar",
+    "estrelas": 3,
+    "review": "Imperdível para fãs do gênero.",
+    "data": "2024-03-27T00:00:00",
+    "ano_lancamento": 2014
+  },
+  {
+    "nome": "A Origem",
+    "estrelas": 4,
+    "review": "Narrativa envolvente e atuações marcantes.",
+    "data": "2024-03-26T00:00:00",
+    "ano_lancamento": 2010
+  },
+  {
+    "nome": "O Cavaleiro das Trevas",
+    "estrelas": 3,
+    "review": "Uma experiência cinematográfica completa.",
+    "data": "2024-03-25T00:00:00",
+    "ano_lancamento": 2008
+  },
+  {
+    "nome": "Gladiador",
+    "estrelas": 3,
+    "review": "Uma experiência cinematográfica completa.",
+    "data": "2024-03-24T00:00:00",
+    "ano_lancamento": 2000
+  },
+  {
+    "nome": "Titanic",
+    "estrelas": 3,
+    "review": "Narrativa envolvente e atuações marcantes.",
+    "data": "2024-03-23T00:00:00",
+    "ano_lancamento": 1997
+  },
+  {
+    "nome": "Os Bons Companheiros",
+    "estrelas": 5,
+    "review": "Uma experiência cinematográfica completa.",
+    "data": "2024-03-22T00:00:00",
+    "ano_lancamento": 1990
+  },
+  {
+    "nome": "O Senhor dos Anéis: A Sociedade do Anel",
+    "estrelas": 3,
+    "review": "Um filme que te faz pensar por dias.",
+    "data": "2024-03-21T00:00:00",
+    "ano_lancamento": 2001
+  },
+  {
+    "nome": "Cisne Negro",
+    "estrelas": 3,
+    "review": "Uma experiência cinematográfica completa.",
+    "data": "2024-03-20T00:00:00",
+    "ano_lancamento": 2010
+  },
+  {
+    "nome": "Parasita",
+    "estrelas": 4,
+    "review": "Um filme que te faz pensar por dias.",
+    "data": "2024-03-19T00:00:00",
+    "ano_lancamento": 2019
+  },
+  {
+    "nome": "La La Land",
+    "estrelas": 3,
+    "review": "Simplesmente uma obra-prima.",
+    "data": "2024-03-18T00:00:00",
+    "ano_lancamento": 2016
+  },
+  {
+    "nome": "Whiplash",
+    "estrelas": 5,
+    "review": "Estilo único com direção impecável.",
+    "data": "2024-03-17T00:00:00",
+    "ano_lancamento": 2014
+  },
+  {
+    "nome": "Her",
+    "estrelas": 5,
+    "review": "Um clássico moderno que desafia convenções.",
+    "data": "2024-03-16T00:00:00",
+    "ano_lancamento": 2013
+  },
+  {
+    "nome": "Requiem para um Sonho",
+    "estrelas": 5,
+    "review": "Emocionante, profundo e inesquecível.",
+    "data": "2024-03-15T00:00:00",
+    "ano_lancamento": 2000
+  },
+  {
+    "nome": "O Grande Hotel Budapeste",
+    "estrelas": 5,
+    "review": "Visual impressionante com roteiro afiado.",
+    "data": "2024-03-14T00:00:00",
+    "ano_lancamento": 2014
+  },
+  {
+    "nome": "Amnésia",
+    "estrelas": 5,
+    "review": "Imperdível para fãs do gênero.",
+    "data": "2024-03-13T00:00:00",
+    "ano_lancamento": 2000
+  },
+  {
+    "nome": "Os Infiltrados",
+    "estrelas": 4,
+    "review": "Emocionante, profundo e inesquecível.",
+    "data": "2024-03-12T00:00:00",
+    "ano_lancamento": 2006
+  },
+  {
+    "nome": "O Irlandês",
+    "estrelas": 3,
+    "review": "Visual impressionante com roteiro afiado.",
+    "data": "2024-03-11T00:00:00",
+    "ano_lancamento": 2019
+  },
+  {
+    "nome": "O Lobo de Wall Street",
+    "estrelas": 3,
+    "review": "Um clássico moderno que desafia convenções.",
+    "data": "2024-03-10T00:00:00",
+    "ano_lancamento": 2013
+  },
+  {
+    "nome": "Corra!",
+    "estrelas": 5,
+    "review": "Simplesmente uma obra-prima.",
+    "data": "2024-03-09T00:00:00",
+    "ano_lancamento": 2017
+  },
+  {
+    "nome": "Nós",
+    "estrelas": 3,
+    "review": "Narrativa envolvente e atuações marcantes.",
+    "data": "2024-03-08T00:00:00",
+    "ano_lancamento": 2019
+  },
+  {
+    "nome": "O Regresso",
+    "estrelas": 5,
+    "review": "Estilo único com direção impecável.",
+    "data": "2024-03-07T00:00:00",
+    "ano_lancamento": 2015
+  },
+  {
+    "nome": "Birdman",
+    "estrelas": 4,
+    "review": "Visual impressionante com roteiro afiado.",
+    "data": "2024-03-06T00:00:00",
+    "ano_lancamento": 2014
+  },
+  {
+    "nome": "O Labirinto do Fauno",
+    "estrelas": 5,
+    "review": "Um filme que te faz pensar por dias.",
+    "data": "2024-03-05T00:00:00",
+    "ano_lancamento": 2006
+  },
+  {
+    "nome": "Bastardos Inglórios",
+    "estrelas": 4,
+    "review": "Imperdível para fãs do gênero.",
+    "data": "2024-03-04T00:00:00",
+    "ano_lancamento": 2009
+  },
+  {
+    "nome": "O Artista",
+    "estrelas": 4,
+    "review": "Combina ação com reflexões filosóficas.",
+    "data": "2024-03-03T00:00:00",
+    "ano_lancamento": 2011
+  },
+  {
+    "nome": "O Jogo da Imitação",
+    "estrelas": 4,
+    "review": "Visual impressionante com roteiro afiado.",
+    "data": "2024-03-02T00:00:00",
+    "ano_lancamento": 2014
+  },
+  {
+    "nome": "Duna",
+    "estrelas": 4,
+    "review": "Uma experiência cinematográfica completa.",
+    "data": "2024-03-01T00:00:00",
+    "ano_lancamento": 2021
+  },
+  {
+    "nome": "Tudo em Todo Lugar ao Mesmo Tempo",
+    "estrelas": 5,
+    "review": "Imperdível para fãs do gênero.",
+    "data": "2024-02-29T00:00:00",
+    "ano_lancamento": 2022
+  },
+  {
+    "nome": "O Grande Truque",
+    "estrelas": 5,
+    "review": "Uma experiência cinematográfica completa.",
+    "data": "2024-02-28T00:00:00",
+    "ano_lancamento": 2006
+  },
+  {
+    "nome": "Gravidade",
+    "estrelas": 4,
+    "review": "Emocionante, profundo e inesquecível.",
+    "data": "2024-02-27T00:00:00",
+    "ano_lancamento": 2013
+  },
+  {
+    "nome": "O Curioso Caso de Benjamin Button",
+    "estrelas": 3,
+    "review": "Estilo único com direção impecável.",
+    "data": "2024-02-26T00:00:00",
+    "ano_lancamento": 2008
+  },
+  {
+    "nome": "Oldboy",
+    "estrelas": 5,
+    "review": "Simplesmente uma obra-prima.",
+    "data": "2024-02-25T00:00:00",
+    "ano_lancamento": 2003
+  },
+  {
+    "nome": "Cidade de Deus",
+    "estrelas": 4,
+    "review": "Narrativa envolvente e atuações marcantes.",
+    "data": "2024-02-24T00:00:00",
+    "ano_lancamento": 2002
+  },
+  {
+    "nome": "O Fabuloso Destino de Amélie Poulain",
+    "estrelas": 4,
+    "review": "Narrativa envolvente e atuações marcantes.",
+    "data": "2024-02-23T00:00:00",
+    "ano_lancamento": 2001
+  },
+  {
+    "nome": "Blade Runner 2049",
+    "estrelas": 5,
+    "review": "Um clássico moderno que desafia convenções.",
+    "data": "2024-02-22T00:00:00",
+    "ano_lancamento": 2017
+  },
+  {
+    "nome": "Até o Último Homem",
+    "estrelas": 5,
+    "review": "Narrativa envolvente e atuações marcantes.",
+    "data": "2024-02-21T00:00:00",
+    "ano_lancamento": 2016
+  },
+  {
+    "nome": "Coringa",
+    "estrelas": 3,
+    "review": "Um clássico moderno que desafia convenções.",
+    "data": "2024-02-20T00:00:00",
+    "ano_lancamento": 2019
+  },
+  {
+    "nome": "A Rede Social",
+    "estrelas": 5,
+    "review": "Um filme que te faz pensar por dias.",
+    "data": "2024-02-19T00:00:00",
+    "ano_lancamento": 2010
+  },
+  {
+    "nome": "Moonlight",
+    "estrelas": 5,
+    "review": "Emocionante, profundo e inesquecível.",
+    "data": "2024-02-18T00:00:00",
+    "ano_lancamento": 2016
+  },
+  {
+    "nome": "Drive",
+    "estrelas": 3,
+    "review": "Narrativa envolvente e atuações marcantes.",
+    "data": "2024-02-17T00:00:00",
+    "ano_lancamento": 2011
+  },
+  {
+    "nome": "O Segredo dos Seus Olhos",
+    "estrelas": 5,
+    "review": "Um filme que te faz pensar por dias.",
+    "data": "2024-02-16T00:00:00",
+    "ano_lancamento": 2009
+  },
+  {
+    "nome": "O Jogo da Imitação",
+    "estrelas": 3,
+    "review": "Estilo único com direção impecável.",
+    "data": "2024-02-15T00:00:00",
+    "ano_lancamento": 2014
+  },
+  {
+    "nome": "O Quarto de Jack",
+    "estrelas": 3,
+    "review": "Narrativa envolvente e atuações marcantes.",
+    "data": "2024-02-14T00:00:00",
+    "ano_lancamento": 2015
+  },
+  {
+    "nome": "O Discurso do Rei",
+    "estrelas": 3,
+    "review": "Um clássico moderno que desafia convenções.",
+    "data": "2024-02-13T00:00:00",
+    "ano_lancamento": 2010
+  },
+  {
+    "nome": "Spotlight",
+    "estrelas": 4,
+    "review": "Um filme que te faz pensar por dias.",
+    "data": "2024-02-12T00:00:00",
+    "ano_lancamento": 2015
+  },
+  {
+    "nome": "A Teoria de Tudo",
+    "estrelas": 3,
+    "review": "Um filme que te faz pensar por dias.",
+    "data": "2024-02-11T00:00:00",
+    "ano_lancamento": 2014
+  }
+]

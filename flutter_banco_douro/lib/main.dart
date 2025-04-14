@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_banco_douro/ui/login_screen.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const BacoDouroApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class BacoDouroApp extends StatelessWidget {
+  const BacoDouroApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
+    return const MaterialApp(home: LoginScreen());
   }
 }
