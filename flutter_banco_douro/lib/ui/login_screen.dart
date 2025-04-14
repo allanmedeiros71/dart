@@ -10,8 +10,8 @@ class LoginScreen extends StatelessWidget {
         children: [
           Image.asset('assets/images/banner.png'),
           Align(
-            child: Image.asset('assets/images/stars.png'),
             alignment: Alignment.bottomLeft,
+            child: Image.asset('assets/images/stars.png'),
           ),
           Padding(
             padding: const EdgeInsets.all(32.0),
