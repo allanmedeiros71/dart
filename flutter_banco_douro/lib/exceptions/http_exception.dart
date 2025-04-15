@@ -3,10 +3,7 @@ import 'base_exception.dart';
 class HttpException extends AppException {
   final int statusCode;
 
-  const HttpException(
-    String message, {
-    required this.statusCode,
-  }) : super(message);
+  const HttpException(super.message, {required this.statusCode});
 
   @override
   String toString() => 'HTTP Error $statusCode: $message';
