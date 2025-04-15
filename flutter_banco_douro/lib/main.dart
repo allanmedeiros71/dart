@@ -11,9 +11,12 @@ class BacoDouroApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(routes:{
-      "login": (context) => const LoginScreen(),
-      "home": (context) => const HomeScreen(),
-    }, initialRoute: "login",);
+    return MaterialApp(
+      routes: {
+        "login": (context) => const LoginScreen(),
+        "home": (context) => HomeScreen(),
+      },
+      initialRoute: "login",
+    );
   }
 }
