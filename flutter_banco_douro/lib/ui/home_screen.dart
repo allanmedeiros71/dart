@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_banco_douro/models/account.dart';
 import 'package:flutter_banco_douro/services/account_service.dart';
 import 'package:flutter_banco_douro/ui/styles/colors.dart';
+import 'package:flutter_banco_douro/ui/widgets/account_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -34,7 +36,19 @@ class HomeScreen extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               case ConnectionState.done:
                 {
-                  return Text("A operação acabou");
+                  if (snapshot.data == null || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text('Nenhuma conta encontrada'),
+                    );
+                  } else {
+                    List<Account> listAccounts = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: listAccounts.length,
+                      itemBuilder: (context, index) {
+                        return AccountWidget(account: listAccounts[index]);
+                      },
+                    );
+                  }
                 }
             }
           },
