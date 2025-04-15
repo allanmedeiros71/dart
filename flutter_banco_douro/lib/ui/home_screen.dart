@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_banco_douro/models/account.dart';
 import 'package:flutter_banco_douro/ui/styles/colors.dart';
+import 'package:flutter_banco_douro/ui/widgets/account_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,6 +20,16 @@ class HomeScreen extends StatelessWidget {
             },
           ),
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: AccountWidget(account: Account( 
+          id: "1",
+          name: "Allan",
+          lastName: "Ferreira",
+          balance: 1000,
+          accountType: AccountType.ambrosia,
+        )),
       ),
     );
   }
